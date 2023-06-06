@@ -129,6 +129,7 @@ void drawFindWindow(){
 
     double noteTitleTextboxX = ww * 1/6 ;
     textbox(GenUIID(0), noteTitleTextboxX, windowsHeight - 0.6, TextStringWidth("xxxxx")*10, fontHeight * 1.5, titleInput, MAX_TITLE_LENGTH);
+    findNote(titleInput);
 
     double findButtonX = ww * 5/6 - (TextStringWidth("Find") + 0.2);
     if (button(GenUIID(0), findButtonX, windowsHeight - 0.6, TextStringWidth("Find") + 0.2, fontHeight * 1.5, "Find")) {
