@@ -18,7 +18,7 @@ void refreshScreen() {
     wh = GetWindowHeight();
     fontHeight = GetFontHeight();
     drawContent(); 
-    if (Window_State == MAIN_WINDOW)
+    if (Window_State == MAIN_WINDOW || Window_State != NULL)
         drawMenu();
 	if (errorCode) {
         drawErrorMessage(errorCode);
@@ -51,6 +51,8 @@ void drawMainWindow() {
         MovePen(ww / 6, LINE_HEIGHT - (i+1) * NOTE_SPACING);
         DrawTextString(current->title);
         current->titleY = LINE_HEIGHT - (i+1) * NOTE_SPACING; // Update the Y coordinate
+        MovePen(ww * 5 / 6 - TextStringWidth(current->category), LINE_HEIGHT - (i+1) * NOTE_SPACING);
+        DrawTextString(current->category);
         
 		double titleWidth = TextStringWidth(current->title);
         MovePen(ww / 6, LINE_HEIGHT - (i+1) * NOTE_SPACING);  // use GetFontHeight() to calculate line position
@@ -82,13 +84,18 @@ void drawNewNoteWindow() {
 
 	double noteTitleLabelX = ww / 2 - TextStringWidth("Note Title:") / 2;
 	drawLabel(noteTitleLabelX, wh - 2.5, "Note Title:");
-    
-    double noteTitleTextboxX = ww / 2 - TextStringWidth("xxxxxxxx") / 2 * 1.6;
-    textbox(GenUIID(0), noteTitleTextboxX, wh - 2.8, TextStringWidth("xxxxxxxx") * 1.6, fontHeight * 1.5, titleInput, MAX_TITLE_LENGTH);
+
+    double noteTitleTextboxX = ww / 2 - TextStringWidth("xxxxxxxx") / 2 * 3;
+    textbox(GenUIID(0), noteTitleTextboxX, wh - 2.8, TextStringWidth("xxxxxxxx") * 3, fontHeight * 1.5, titleInput, MAX_TITLE_LENGTH);
+    //category
+    double noteCategoryLabelX = ww / 2 - TextStringWidth("Note Category:") / 2;
+	drawLabel(noteCategoryLabelX, wh - 3, "Note Category:");
+
+    textbox(GenUIID(0), noteTitleTextboxX, wh - 3.3, TextStringWidth("xxxxxxxx") * 3, fontHeight * 1.5, categoryInput, MAX_TITLE_LENGTH);
     
     double saveButtonX = ww / 2 - 1.2;
     if (button(GenUIID(0), saveButtonX, wh - 4, TextStringWidth("Save") + 0.2, fontHeight + 0.2, "Save")) {
-        saveNewNoteTitle(titleInput);
+        saveNewNoteTitle(titleInput, categoryInput);
     }//GenUIID(0)
     
     double cancelButtonX = ww / 2 + 0.6;
@@ -120,6 +127,56 @@ void drawEditNoteWindow(NoteNode *current){
     isBlink = !isBlink;
     if (isBlink) startTimer(TIMER_BLINK, MILLISECONDS);
     else cancelTimer(TIMER_BLINK);*/
+}
+
+void drawIntroWindow(){
+	double wh = GetWindowHeight();
+    double ww = GetWindowWidth();
+	double titleX = ww / 2 - TextStringWidth("This is a note management system.") / 2;
+	drawLabel(titleX, wh - 1.25, "This is a note management system.");
+
+    double cancelButtonX = ww / 2 - 0.5*(TextStringWidth("Back") + 0.2);
+    if (button(GenUIID(0), cancelButtonX, wh - 4, TextStringWidth("Back") + 0.2, fontHeight + 0.2, "Back")) {
+        Window_State = MAIN_WINDOW;
+    }
+}
+
+void drawFindWindow(){
+	double wh = GetWindowHeight();
+    double ww = GetWindowWidth();
+    double NOTE_SPACING = wh /3 /MAX_NOTES;
+    double LINE_HEIGHT = wh / 4 * 3;
+
+    SetPenColor("Black");      // Draw"Notebook" title
+    MovePen(ww / 6, LINE_HEIGHT + NOTE_SPACING);
+    DrawTextString("Find");
+
+
+    MovePen(ww / 6, LINE_HEIGHT); // Draw dividing line
+    DrawLine(ww * 2/3, 0);
+	
+	NoteNode *current = note_head;
+    int i = 0;
+    while (current) {
+        if(strcmp(current->title,titleInput) == 0){
+            MovePen(ww / 6, LINE_HEIGHT - (i+1) * NOTE_SPACING);
+            DrawTextString(current->title);
+            MovePen(ww * 5 / 6 - TextStringWidth(current->category), LINE_HEIGHT - (i+1) * NOTE_SPACING);
+            DrawTextString(current->category);
+        }
+        current = current->next;
+        i++;
+    }
+	
+    double noteTitleTextboxX = ww * 1/6 ;
+    textbox(GenUIID(0), noteTitleTextboxX, wh - 0.6, TextStringWidth("xxxxx")*10, fontHeight * 1.5, titleInput, MAX_TITLE_LENGTH);
+
+
+	double backButtonX = ww * 5/6 - (TextStringWidth("Back") + 0.2);
+	if (button(GenUIID(0), backButtonX, wh - 4.5, TextStringWidth("Back") + 0.2, fontHeight * 1.5, "Back")) {
+        Window_State = MAIN_WINDOW;
+    }
+
 }
 
 void drawErrorMessage(int errorID) {
@@ -155,9 +212,48 @@ void drawContent() {
         case EDIT_NOTE_WINDOW:
         	drawEditNoteWindow(currentNode);//
         	break;
+        case INTRO_WINDOW:
+            drawIntroWindow();
+            break;
+        case FIND_WINDOW:
+            drawFindWindow();
+            break;
     }
 }
 
 void drawMenu(){
-	;
+	double wh = GetWindowHeight();
+    double ww = GetWindowWidth();
+
+    drawMenuBar(0, wh-fontHeight * 1.5, ww, fontHeight * 1.5);
+
+	char * File[] = {"File",
+		"Close"};
+	char * Option[] = {"Option",
+		"Find"};
+	char * View[] = {"View"};
+	char * Help[] = {"Help",
+		"Help"};
+	int selection1;
+	int selection2;
+	int selection3;
+	int selection4;
+
+	selection1 = menuList(GenUIID(0), 0, wh-fontHeight * 1.5, ww*1/10, ww*1/10, fontHeight * 1.5, File, sizeof(File)/sizeof(File[0]));
+	selection2 = menuList(GenUIID(0), ww*1/10, wh-fontHeight * 1.5, ww*1/10, ww*1/10, fontHeight * 1.5, Option, sizeof(Option)/sizeof(Option[0]));
+	selection3 = menuList(GenUIID(0), ww*2/10, wh-fontHeight * 1.5, ww*1/10, ww*1/10, fontHeight * 1.5, View, sizeof(View)/sizeof(View[0]));
+	selection4 = menuList(GenUIID(0), ww*3/10, wh-fontHeight * 1.5, ww*1/10, ww*1/10, fontHeight * 1.5, Help, sizeof(Help)/sizeof(Help[0]));
+
+	if( selection1 == 1 ){
+		exit(-1);
+	}
+	if( selection4 == 1 ){
+		Window_State = INTRO_WINDOW;
+        refreshScreen();
+	}
+
+	if( selection2 == 1 ){
+        Window_State = FIND_WINDOW;
+        refreshScreen();
+    }
 }

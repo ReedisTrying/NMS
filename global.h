@@ -18,12 +18,15 @@
 
 #define MAX_NOTES 10
 #define MAX_TITLE_LENGTH 128
+#define MAX_CATEGORY_LENGTH 128
 #define TIMER_ERRORMESSAGE 2
 
 enum WindowState{
     MAIN_WINDOW,
     NEW_NOTE_WINDOW,
-    EDIT_NOTE_WINDOW
+    EDIT_NOTE_WINDOW,
+    INTRO_WINDOW,
+    FIND_WINDOW
 };
 enum WindowState Window_State;
 
@@ -31,6 +34,7 @@ typedef struct NoteNode NoteNode;
 
 struct NoteNode {
     char title[MAX_TITLE_LENGTH];
+    char category[MAX_CATEGORY_LENGTH];
     double titleY;
     NoteNode *next;
     //FILE fp;
@@ -42,6 +46,7 @@ extern double ww,wh;
 extern NoteNode *note_head;
 extern NoteNode *currentNode;
 extern char titleInput[MAX_TITLE_LENGTH];
+extern char categoryInput[MAX_TITLE_LENGTH];
 extern int noteCount;
 extern int errorCode;
 extern double curyy;
@@ -56,7 +61,7 @@ void drawErrorMessage(int errorCode);
 void refreshScreen();
 void windowsInit();
 
-void saveNewNoteTitle(char *title);
+void saveNewNoteTitle(char *title, char *category);
 void deleteNoteNode(NoteNode *current);
 void noteTitleClick(NoteNode* current);
 

@@ -1,6 +1,6 @@
 #include "global.h"
 
-void saveNewNoteTitle(char *title) {
+void saveNewNoteTitle(char *title, char *category) {
     if (strlen(title) > 0 && strlen(title) <= MAX_TITLE_LENGTH - 1) {
         // Create a new node
         NoteNode *newNode = (NoteNode *) malloc(sizeof(NoteNode));
@@ -9,25 +9,27 @@ void saveNewNoteTitle(char *title) {
 		    return;
 		}
         strncpy(newNode->title, title, MAX_TITLE_LENGTH - 1);
+        strncpy(newNode->category, category, MAX_TITLE_LENGTH - 1);
         newNode->title[MAX_TITLE_LENGTH - 1] = '\0';
+        newNode->category[MAX_TITLE_LENGTH - 1] = '\0';
         newNode->next = NULL;
 
         // Add the new node to the linked list
         if (!note_head) {
             note_head = newNode;
         } else {
-        
+
 		NoteNode *current = note_head;
         while (current->next) {
             current = current->next;
         }
-        
+
 		current->next = newNode;
-        
+
         }
 
         noteCount++;
-        
+
         memset(titleInput, 0, sizeof(titleInput));
 
         Window_State = MAIN_WINDOW; // Return to the main window
