@@ -29,7 +29,7 @@ IncludeVersionInfo=0
 SupportXPThemes=0
 CompilerSet=0
 CompilerSettings=0000000000000000000000000
-UnitCount=21
+UnitCount=24
 
 [VersionInfo]
 Major=1
@@ -251,7 +251,7 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit21]
-FileName=main.h
+FileName=global.h
 CompileCpp=0
 Folder=
 Compile=1
@@ -261,7 +261,27 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit23]
-FileName=TextInput.c
+FileName=callback.c
+CompileCpp=0
+Folder=
+Compile=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+
+[Unit22]
+FileName=draw.c
+CompileCpp=0
+Folder=
+Compile=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+
+[Unit24]
+FileName=node.c
 CompileCpp=0
 Folder=
 Compile=1
