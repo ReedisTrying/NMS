@@ -5,7 +5,7 @@
 #include "extgraph.h"
 #include "genlib.h"
 #include "simpio.h"
-
+#include <time.h>
 #include <windows.h>
 #include <olectl.h>
 #include <mmsystem.h>
@@ -17,16 +17,17 @@
 #include "imgui.h"
 
 #define MAX_NOTES 10
-#define MAX_TITLE_LENGTH 128
-#define MAX_CATEGORY_LENGTH 128
+#define MAX_TITLE_LENGTH 64
+#define MAX_NOTE_LENGTH 1024
+#define MILLISECONDS 1000
+#define TIMER_BLINK 1
 #define TIMER_ERRORMESSAGE 2
+
 
 enum WindowState{
     MAIN_WINDOW,
     NEW_NOTE_WINDOW,
-    EDIT_NOTE_WINDOW,
-    INTRO_WINDOW,
-    FIND_WINDOW
+    EDIT_NOTE_WINDOW
 };
 enum WindowState Window_State;
 
@@ -34,22 +35,31 @@ typedef struct NoteNode NoteNode;
 
 struct NoteNode {
     char title[MAX_TITLE_LENGTH];
-    char category[MAX_CATEGORY_LENGTH];
     double titleY;
     NoteNode *next;
-    //FILE fp;
+    FILE *fp;
 };
 
-//extern struct NoteNode *NoteNode; //struct error
+extern double ww,wh; //position
+extern double curyy;
+extern double currentX;
 
-extern double ww,wh;
-extern NoteNode *note_head;
+extern NoteNode *note_head; //node
 extern NoteNode *currentNode;
 extern char titleInput[MAX_TITLE_LENGTH];
-extern char categoryInput[MAX_TITLE_LENGTH];
 extern int noteCount;
 extern int errorCode;
-extern double curyy;
+
+
+extern bool isBlink; //text
+extern bool isDisplay;
+extern char *text;
+extern int textlen;
+extern int buffersize;
+extern int location;
+extern int curOp; 
+extern double InitX;
+extern double InitY;
 
 void drawMainWindow();
 void drawNewNoteWindow();
@@ -57,13 +67,17 @@ void drawEditNoteWindow(NoteNode *current);
 void drawContent();
 void drawMenu();
 void drawErrorMessage(int errorCode);
+void drawCursor();
 
 void refreshScreen();
 void windowsInit();
 
-void saveNewNoteTitle(char *title, char *category);
+void saveNewNoteTitle(char *title);
 void deleteNoteNode(NoteNode *current);
 void noteTitleClick(NoteNode* current);
+void saveNote(NoteNode *current);
+void loadNotes(NoteNode *current); 
+void resetText();
 
 void KeyboardEventProcess(int key, int event);
 void CharEventProcess(char c);
